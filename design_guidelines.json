@@ -1,0 +1,162 @@
+{
+  "identity": {
+    "name": "E1: The Homemade Artisan",
+    "description": "A warm, inviting, and trustworthy design persona that blends the nostalgia of homemade food with the efficiency of modern tools. Prioritizes clarity, large touch targets, and a 'kitchen-table' friendly aesthetic over cold, tech-heavy interfaces.",
+    "theme_mode": "light",
+    "key_principles": [
+      "Warmth over Coolness: Avoid blue/grey tech defaults. Use warm neutrals.",
+      "Legibility is Love: Big text, high contrast (but soft blacks), clear hierarchy.",
+      "Tactile Feel: UI elements should feel like physical cards or paper labels.",
+      "Simplicity First: Hide complexity. Parents shouldn't see database IDs."
+    ]
+  },
+  "typography": {
+    "primary_font": "Manrope",
+    "secondary_font": "Fraunces",
+    "usage": {
+      "headings": {
+        "family": "Fraunces",
+        "weights": [600, 700],
+        "style": "Serif, warm and editorial",
+        "class": "font-serif tracking-tight text-primary-900"
+      },
+      "body": {
+        "family": "Manrope",
+        "weights": [400, 500],
+        "style": "Sans-serif, rounded and highly legible",
+        "class": "font-sans text-stone-700"
+      }
+    },
+    "installation_command": "npm install @fontsource/fraunces @fontsource/manrope"
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#D35400",
+        "foreground": "#FFFFFF",
+        "description": "Terracotta/Spiced Orange - Main actions, buttons, highlights"
+      },
+      "secondary": {
+        "DEFAULT": "#5D6D7E",
+        "foreground": "#FFFFFF",
+        "description": "Slate Blue/Grey - Secondary actions, less urgent UI"
+      },
+      "background": "#FAF9F6",
+      "surface": "#FFFFFF",
+      "text": {
+        "primary": "#2C3E50",
+        "secondary": "#566573",
+        "muted": "#808B96"
+      },
+      "status": {
+        "success": "#27AE60",
+        "warning": "#F39C12",
+        "error": "#C0392B",
+        "info": "#2980B9"
+      },
+      "accent": "#F5B041"
+    },
+    "tailwind_config_extension": {
+      "colors": {
+        "border": "hsl(var(--border))",
+        "input": "hsl(var(--input))",
+        "ring": "hsl(var(--ring))",
+        "background": "hsl(var(--background))",
+        "foreground": "hsl(var(--foreground))",
+        "primary": {
+          "DEFAULT": "hsl(var(--primary))",
+          "foreground": "hsl(var(--primary-foreground))"
+        },
+        "secondary": {
+          "DEFAULT": "hsl(var(--secondary))",
+          "foreground": "hsl(var(--secondary-foreground))"
+        },
+        "destructive": {
+          "DEFAULT": "hsl(var(--destructive))",
+          "foreground": "hsl(var(--destructive-foreground))"
+        },
+        "muted": {
+          "DEFAULT": "hsl(var(--muted))",
+          "foreground": "hsl(var(--muted-foreground))"
+        },
+        "accent": {
+          "DEFAULT": "hsl(var(--accent))",
+          "foreground": "hsl(var(--accent-foreground))"
+        },
+        "popover": {
+          "DEFAULT": "hsl(var(--popover))",
+          "foreground": "hsl(var(--popover-foreground))"
+        },
+        "card": {
+          "DEFAULT": "hsl(var(--card))",
+          "foreground": "hsl(var(--card-foreground))"
+        }
+      },
+      "borderRadius": {
+        "lg": "var(--radius)",
+        "md": "calc(var(--radius) - 2px)",
+        "sm": "calc(var(--radius) - 4px)"
+      }
+    }
+  },
+  "layout_strategy": {
+    "container": "max-w-7xl mx-auto p-4 md:p-8",
+    "grid_system": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6",
+      "products": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+    },
+    "spacing": {
+      "section_gap": "gap-8",
+      "card_padding": "p-6"
+    },
+    "navigation": {
+      "type": "sidebar",
+      "mobile": "bottom-nav or hamburger",
+      "style": "bg-white border-r border-stone-200"
+    }
+  },
+  "components": {
+    "Button": {
+      "style": "rounded-full px-6 py-6 text-lg font-semibold shadow-sm hover:shadow-md transition-all active:scale-95",
+      "variants": {
+        "default": "bg-primary text-primary-foreground hover:bg-primary/90",
+        "outline": "border-2 border-primary text-primary hover:bg-primary/10"
+      }
+    },
+    "Card": {
+      "style": "bg-white/80 backdrop-blur-sm border border-stone-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all rounded-2xl overflow-hidden"
+    },
+    "Input": {
+      "style": "h-12 rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all text-lg"
+    }
+  },
+  "image_urls": {
+    "products": [
+      "https://images.unsplash.com/photo-1733714654311-102cb838ab2c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHw0fHxob21lbWFkZSUyMGluZGlhbiUyMHBpY2tsZXMlMjBqYXIlMjBzcGljZXN8ZW58MHx8fHwxNzcyNzIxOTUzfDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1632239108217-f6268b8d2622?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHwxfHxob21lbWFkZSUyMGluZGlhbiUyMHBpY2tsZXMlMjBqYXIlMjBzcGljZXN8ZW58MHx8fHwxNzcyNzIxOTUzfDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1617854307432-13950e24ba07?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHwzfHxob21lbWFkZSUyMGluZGlhbiUyMHBpY2tsZXMlMjBqYXIlMjBzcGljZXN8ZW58MHx8fHwxNzcyNzIxOTUzfDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1706167754852-128daa40126a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHwyfHxob21lbWFkZSUyMGluZGlhbiUyMHBpY2tsZXMlMjBqYXIlMjBzcGljZXN8ZW58MHx8fHwxNzcyNzIxOTUzfDA&ixlib=rb-4.1.0&q=85"
+    ],
+    "hero": [
+      "https://images.unsplash.com/photo-1632239108217-f6268b8d2622?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHwxfHxob21lbWFkZSUyMGluZGlhbiUyMHBpY2tsZXMlMjBqYXIlMjBzcGljZXN8ZW58MHx8fHwxNzcyNzIxOTUzfDA&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. THEME SETUP: Implement the 'Warm Earth' theme immediately. Update tailwind.config.js with the provided colors.",
+    "2. FONT SETUP: Install @fontsource/fraunces and @fontsource/manrope. Import them in index.js/App.js.",
+    "3. NAVIGATION: Build a responsive sidebar. On mobile, it should be a bottom sheet or a hamburger menu. Links: Dashboard, Products, Sales, Customers, Reports.",
+    "4. DASHBOARD: Create a 'Welcome back' section. Show 4 key cards: Total Sales (Today), Pending Orders, Low Stock Items, Total Profit. Use large numbers.",
+    "5. PRODUCTS PAGE: Use a GRID layout for products, not a table. Each card shows: Image, Name, Price, Stock Badge. Add a big floating '+' button for adding products.",
+    "6. SALES ENTRY: This is the most used feature. Make it a dedicated page. Simple form: Select Product (Searchable Dropdown), Quantity, Customer Phone (Auto-fill if exists).",
+    "7. ALERTS: Use soft colored badges for 'Low Stock' (e.g., amber background, brown text).",
+    "8. CHARTS: Use 'recharts' for a simple 'Sales last 7 days' bar chart on the dashboard. Color bars with the Primary color.",
+    "9. MOBILE FIRST: Ensure all buttons are at least 44px height. Padding should be generous."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop': Do not use generic blue gradients. Stick to the Earthy Palette.",
+    "Data-Test-IDs: Every button and input must have a data-testid attribute.",
+    "No Transparent Backgrounds: Ensure dropdowns and headers have solid or blurred backgrounds.",
+    "Micro-interactions: Add active:scale-95 to all buttons.",
+    "Empty States: If a list is empty, show a friendly illustration/icon and a message (e.g., 'No sales yet today! Time to sell some laddus?')."
+  ]
+}

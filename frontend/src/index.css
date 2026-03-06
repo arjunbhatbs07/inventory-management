@@ -1,0 +1,89 @@
+@import '@fontsource/fraunces/600.css';
+@import '@fontsource/fraunces/700.css';
+@import '@fontsource/manrope/400.css';
+@import '@fontsource/manrope/500.css';
+@import '@fontsource/manrope/600.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 30 20% 98%;
+        --foreground: 210 24% 16%;
+        --card: 0 0% 100%;
+        --card-foreground: 210 24% 16%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 210 24% 16%;
+        --primary: 17 100% 42%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 210 14% 42%;
+        --secondary-foreground: 0 0% 100%;
+        --muted: 210 8% 55%;
+        --muted-foreground: 210 8% 55%;
+        --accent: 35 84% 62%;
+        --accent-foreground: 210 24% 16%;
+        --destructive: 4 69% 50%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 30 8% 90%;
+        --input: 30 8% 85%;
+        --ring: 17 100% 42%;
+        --radius: 1rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground font-sans;
+        font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-serif;
+        font-family: 'Fraunces', Georgia, serif;
+    }
+}
+
+@layer utilities {
+    .font-serif {
+        font-family: 'Fraunces', Georgia, serif;
+    }
+    .font-sans {
+        font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
