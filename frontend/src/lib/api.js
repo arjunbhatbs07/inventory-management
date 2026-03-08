@@ -9,17 +9,23 @@ const API = axios.create({
   },
 });
 
+// Attach JWT token automatically
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
 export const api = {
-  // Dashboard
   getDashboard: () =>
     API.get("/dashboard").then((res) => ({ data: res.data })),
 
-  // Products
   getProducts: () =>
     API.get("/products").then((res) => ({ data: res.data })),
-
-  getProduct: (id) =>
-    API.get(`/products/${id}`).then((res) => ({ data: res.data })),
 
   createProduct: (data) =>
     API.post("/products", data).then((res) => ({ data: res.data })),
@@ -30,32 +36,21 @@ export const api = {
   deleteProduct: (id) =>
     API.delete(`/products/${id}`).then((res) => ({ data: res.data })),
 
-  // Customers
   getCustomers: (search = "") =>
     API.get(`/customers?search=${search}`).then((res) => ({ data: res.data })),
-
-  getCustomer: (id) =>
-    API.get(`/customers/${id}`).then((res) => ({ data: res.data })),
 
   createCustomer: (data) =>
     API.post("/customers", data).then((res) => ({ data: res.data })),
 
-  getCustomerByPhone: (phone) =>
-    API.get(`/customers/phone/${phone}`).then((res) => ({ data: res.data })),
-
-  // NOTE: backend endpoint is /orders/customer/{customer_id}
   getCustomerOrders: (customerId) =>
     API.get(`/orders/customer/${customerId}`).then((res) => ({ data: res.data })),
 
-  // Orders
   createOrder: (data) =>
     API.post("/orders", data).then((res) => ({ data: res.data })),
 
   getOrders: () =>
     API.get("/orders").then((res) => ({ data: res.data })),
 
-  // Inventory
-  // backend endpoint: /inventory/update-stock
   updateStock: (data) =>
     API.post("/inventory/update-stock", data).then((res) => ({ data: res.data })),
 
@@ -65,7 +60,6 @@ export const api = {
   getInventoryValue: () =>
     API.get("/inventory/value").then((res) => ({ data: res.data })),
 
-  // Reports
   getSalesReport: (period) =>
     API.get(`/reports/sales?period=${period}`).then((res) => ({ data: res.data })),
 };
