@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://inventory-management-exvi.onrender.com";
+const API_BASE_URL = "https://inventory-management-exvi.onrender.com/api";
 
 const API = axios.create({
   baseURL: API_BASE_URL,
@@ -43,8 +43,9 @@ export const api = {
   getCustomerByPhone: (phone) =>
     API.get(`/customers/phone/${phone}`).then((res) => ({ data: res.data })),
 
+  // NOTE: backend endpoint is /orders/customer/{customer_id}
   getCustomerOrders: (customerId) =>
-    API.get(`/customers/${customerId}/orders`).then((res) => ({ data: res.data })),
+    API.get(`/orders/customer/${customerId}`).then((res) => ({ data: res.data })),
 
   // Orders
   createOrder: (data) =>
@@ -54,11 +55,12 @@ export const api = {
     API.get("/orders").then((res) => ({ data: res.data })),
 
   // Inventory
+  // backend endpoint: /inventory/update-stock
   updateStock: (data) =>
-    API.post("/inventory/update", data).then((res) => ({ data: res.data })),
+    API.post("/inventory/update-stock", data).then((res) => ({ data: res.data })),
 
-  getStockHistory: (productId) =>
-    API.get(`/inventory/${productId}`).then((res) => ({ data: res.data })),
+  getStockHistory: () =>
+    API.get("/inventory/history").then((res) => ({ data: res.data })),
 
   getInventoryValue: () =>
     API.get("/inventory/value").then((res) => ({ data: res.data })),
@@ -66,10 +68,4 @@ export const api = {
   // Reports
   getSalesReport: (period) =>
     API.get(`/reports/sales?period=${period}`).then((res) => ({ data: res.data })),
-
-  getBestSellingProducts: () =>
-    API.get("/reports/best-products").then((res) => ({ data: res.data })),
-
-  exportCSV: () =>
-    API.get("/reports/export").then((res) => ({ data: res.data })),
 };
