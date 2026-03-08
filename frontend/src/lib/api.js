@@ -1,40 +1,75 @@
-import { storageService } from './localStorage';
+import axios from "axios";
 
-// Wrap localStorage service to return promises (for compatibility with existing code)
-const promisify = (fn) => (...args) => Promise.resolve(fn(...args));
+const API_BASE_URL = "https://inventory-management-exvi.onrender.com";
+
+const API = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export const api = {
   // Dashboard
-  getDashboard: promisify(() => ({ data: storageService.getDashboardStats() })),
+  getDashboard: () =>
+    API.get("/dashboard").then((res) => ({ data: res.data })),
 
   // Products
-  getProducts: promisify(() => ({ data: storageService.getProducts() })),
-  getProduct: promisify((id) => ({ data: storageService.getProduct(id) })),
-  createProduct: promisify((data) => ({ data: storageService.createProduct(data) })),
-  updateProduct: promisify((id, data) => ({ data: storageService.updateProduct(id, data) })),
-  deleteProduct: promisify((id) => { storageService.deleteProduct(id); return { data: { message: 'Deleted' } }; }),
+  getProducts: () =>
+    API.get("/products").then((res) => ({ data: res.data })),
+
+  getProduct: (id) =>
+    API.get(`/products/${id}`).then((res) => ({ data: res.data })),
+
+  createProduct: (data) =>
+    API.post("/products", data).then((res) => ({ data: res.data })),
+
+  updateProduct: (id, data) =>
+    API.put(`/products/${id}`, data).then((res) => ({ data: res.data })),
+
+  deleteProduct: (id) =>
+    API.delete(`/products/${id}`).then((res) => ({ data: res.data })),
 
   // Customers
-  getCustomers: promisify((search) => ({ data: storageService.getCustomers(search) })),
-  getCustomer: promisify((id) => ({ data: storageService.getCustomers().find(c => c.id === id) })),
-  createCustomer: promisify((data) => ({ data: storageService.createCustomer(data) })),
-  getCustomerByPhone: promisify((phone) => ({ data: storageService.getCustomerByPhone(phone) })),
-  getCustomerOrders: promisify((customerId) => ({ data: storageService.getCustomerOrders(customerId) })),
+  getCustomers: (search = "") =>
+    API.get(`/customers?search=${search}`).then((res) => ({ data: res.data })),
+
+  getCustomer: (id) =>
+    API.get(`/customers/${id}`).then((res) => ({ data: res.data })),
+
+  createCustomer: (data) =>
+    API.post("/customers", data).then((res) => ({ data: res.data })),
+
+  getCustomerByPhone: (phone) =>
+    API.get(`/customers/phone/${phone}`).then((res) => ({ data: res.data })),
+
+  getCustomerOrders: (customerId) =>
+    API.get(`/customers/${customerId}/orders`).then((res) => ({ data: res.data })),
 
   // Orders
-  createOrder: promisify((data) => ({ data: storageService.createOrder(data) })),
-  getOrders: promisify(() => ({ data: storageService.getOrders() })),
+  createOrder: (data) =>
+    API.post("/orders", data).then((res) => ({ data: res.data })),
+
+  getOrders: () =>
+    API.get("/orders").then((res) => ({ data: res.data })),
 
   // Inventory
-  updateStock: promisify((data) => {
-    storageService.updateStock(data.product_id, data.action === 'add' ? data.quantity : -data.quantity, data.action === 'add' ? 'Add Stock' : 'Reduce Stock');
-    return { data: { message: 'Updated' } };
-  }),
-  getStockHistory: promisify((productId) => ({ data: storageService.getStockHistory(productId) })),
-  getInventoryValue: promisify(() => ({ data: { inventory_value: storageService.getInventoryValue() } })),
+  updateStock: (data) =>
+    API.post("/inventory/update", data).then((res) => ({ data: res.data })),
+
+  getStockHistory: (productId) =>
+    API.get(`/inventory/${productId}`).then((res) => ({ data: res.data })),
+
+  getInventoryValue: () =>
+    API.get("/inventory/value").then((res) => ({ data: res.data })),
 
   // Reports
-  getSalesReport: promisify((period) => ({ data: storageService.getSalesReport(period) })),
-  getBestSellingProducts: promisify(() => ({ data: storageService.getBestSellingProducts() })),
-  exportCSV: promisify(() => ({ data: storageService.exportCSV() }))
+  getSalesReport: (period) =>
+    API.get(`/reports/sales?period=${period}`).then((res) => ({ data: res.data })),
+
+  getBestSellingProducts: () =>
+    API.get("/reports/best-products").then((res) => ({ data: res.data })),
+
+  exportCSV: () =>
+    API.get("/reports/export").then((res) => ({ data: res.data })),
 };
