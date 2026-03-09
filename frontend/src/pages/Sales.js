@@ -101,7 +101,7 @@ const Sales = () => {
   const downloadInvoice = async (orderId) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/orders/${orderId}/invoice`
+        `https://inventory-management-exvi.onrender.com/api/orders/${orderId}/invoice`
       );
 
       const blob = await response.blob();
