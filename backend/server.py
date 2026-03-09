@@ -690,7 +690,7 @@ async def seed_initial_data():
     if existing_products > 0:
         return {"message": "Data already exists"}
     
-    import uuid
+   
     
     # Initial products from user's data
     initial_products = [
