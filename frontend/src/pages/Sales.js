@@ -98,23 +98,23 @@ const Sales = () => {
      NEW FUNCTION FOR INVOICE
      =========================== */
 
-  const downloadInvoice = async (orderId) => {
-    try {
-      const response = await fetch(
-        `https://inventory-management-exvi.onrender.com/api/orders/${orderId}/invoice`
-      );
+const downloadInvoice = async (orderId) => {
+  try {
+    const response = await fetch(
+      `https://inventory-management-exvi.onrender.com/api/orders/${orderId}/invoice`
+    );
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice_${orderId}.pdf`;
-      a.click();
-    } catch (error) {
-      toast.error("Failed to download invoice");
-    }
-  };
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `invoice_${orderId}.pdf`;
+    a.click();
+  } catch (error) {
+    toast.error("Failed to download invoice");
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
