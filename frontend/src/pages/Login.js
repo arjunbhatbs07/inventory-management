@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { UtensilsCrossed } from 'lucide-react';
 
 const Login = ({ onLogin }) => {
-  const [isRegister, setIsRegister] = useState(false);
+  const [isRegister, setIsRegister] = useState(false); // default login
   const [loading, setLoading] = useState(false);
   const [firstTime, setFirstTime] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,17 +28,17 @@ const Login = ({ onLogin }) => {
   }, [navigate]);
 
   const checkFirstTime = async () => {
-    try {
-      const response = await api.getProducts();
-      if (response.data.length === 0) {
-        setFirstTime(true);
-        setIsRegister(true);
-      }
-    } catch (error) {
+  try {
+    const response = await api.getProducts();
+    if (response.data.length === 0) {
       setFirstTime(true);
-      setIsRegister(true);
     }
-  };
+  } catch (error) {
+    // If not authenticated, just show login
+    setFirstTime(false);
+    setIsRegister(false);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
