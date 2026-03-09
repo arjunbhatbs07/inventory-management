@@ -16,7 +16,12 @@ import base64
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from fastapi.responses import FileResponse
-import os
+import uuid
+
+INVOICE_DIR = "invoices"
+if not os.path.exists(INVOICE_DIR):
+    os.makedirs(INVOICE_DIR)
+    
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -194,52 +199,60 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     return User(**user_doc)
 
-def generate_invoice(order):
+@api_router.get("/orders/{order_id}/invoice")
+async def generate_invoice(order_id: str, current_user: User = Depends(get_current_user)):
 
-    os.makedirs("invoices", exist_ok=True)
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
 
-    file_path = f"invoices/invoice_{order['id']}.pdf"
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
 
-    c = canvas.Canvas(file_path, pagesize=A4)
+    filename = f"invoice_{order_id}.pdf"
+    filepath = os.path.join(INVOICE_DIR, filename)
 
-    y = 800
+    c = canvas.Canvas(filepath, pagesize=letter)
 
-    c.setFont("Helvetica-Bold", 18)
-    c.drawString(200, y, "SAAC Inventory Invoice")
+    y = 750
+
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(200, y, "INVOICE")
 
     y -= 40
 
     c.setFont("Helvetica", 12)
+
     c.drawString(50, y, f"Order ID: {order['id']}")
     y -= 20
+
     c.drawString(50, y, f"Customer: {order['customer_name']}")
     y -= 20
-    c.drawString(50, y, f"Phone: {order['customer_phone']}")
 
-    y -= 40
+    c.drawString(50, y, f"Phone: {order['customer_phone']}")
+    y -= 30
+
     c.drawString(50, y, "Products:")
 
     y -= 20
 
     for item in order["items"]:
-        c.drawString(
-            60,
-            y,
-            f"{item['product_name']} - {item['quantity']} {item['unit']}  ₹{item['selling_price']}"
-        )
+        line = f"{item['product_name']}  -  {item['quantity']} {item['unit']}  -  ₹{item['selling_price']}"
+        c.drawString(70, y, line)
         y -= 20
 
-    y -= 30
+    y -= 20
 
     c.drawString(50, y, f"Total Revenue: ₹{order['total_revenue']}")
     y -= 20
-    c.drawString(50, y, f"Total Cost: ₹{order['total_cost_price']}")
-    y -= 20
+
     c.drawString(50, y, f"Profit: ₹{order['net_profit']}")
 
     c.save()
 
-    return file_path
+    return FileResponse(
+        filepath,
+        media_type="application/pdf",
+        filename=filename
+    )
 
 # ==================== AUTH ROUTES ====================
 
