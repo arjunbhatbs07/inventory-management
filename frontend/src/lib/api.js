@@ -88,6 +88,14 @@ export const api = {
     return { data: res.data };
   },
 
+  // ================= INVOICE =================
+downloadInvoice: async (orderId) => {
+  const res = await API.get(`/orders/${orderId}/invoice`, {
+    responseType: "blob"
+  });
+  return res.data;
+},
+
   // ================= INVENTORY =================
   updateStock: async (data) => {
     const res = await API.post("/inventory/update-stock", data);
