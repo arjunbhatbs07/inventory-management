@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import hashlib
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
@@ -157,11 +158,13 @@ class DashboardStats(BaseModel):
 
 # ==================== AUTH HELPERS ====================
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password):
+def get_password_hash(password: str):
+    password = hashlib.sha256(password.encode()).hexdigest()
     return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str):
+    plain_password = hashlib.sha256(plain_password.encode()).hexdigest()
+    return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(data: dict):
     to_encode = data.copy()
