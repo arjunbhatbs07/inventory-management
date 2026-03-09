@@ -13,7 +13,10 @@ from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import base64
-
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from fastapi.responses import FileResponse
+import os
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -190,6 +193,53 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     if user_doc is None:
         raise credentials_exception
     return User(**user_doc)
+
+def generate_invoice(order):
+
+    os.makedirs("invoices", exist_ok=True)
+
+    file_path = f"invoices/invoice_{order['id']}.pdf"
+
+    c = canvas.Canvas(file_path, pagesize=A4)
+
+    y = 800
+
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(200, y, "SAAC Inventory Invoice")
+
+    y -= 40
+
+    c.setFont("Helvetica", 12)
+    c.drawString(50, y, f"Order ID: {order['id']}")
+    y -= 20
+    c.drawString(50, y, f"Customer: {order['customer_name']}")
+    y -= 20
+    c.drawString(50, y, f"Phone: {order['customer_phone']}")
+
+    y -= 40
+    c.drawString(50, y, "Products:")
+
+    y -= 20
+
+    for item in order["items"]:
+        c.drawString(
+            60,
+            y,
+            f"{item['product_name']} - {item['quantity']} {item['unit']}  ₹{item['selling_price']}"
+        )
+        y -= 20
+
+    y -= 30
+
+    c.drawString(50, y, f"Total Revenue: ₹{order['total_revenue']}")
+    y -= 20
+    c.drawString(50, y, f"Total Cost: ₹{order['total_cost_price']}")
+    y -= 20
+    c.drawString(50, y, f"Profit: ₹{order['net_profit']}")
+
+    c.save()
+
+    return file_path
 
 # ==================== AUTH ROUTES ====================
 
@@ -603,7 +653,21 @@ async def export_sales_csv(
         "csv_data": csv_content,
         "filename": f"sales_report_{datetime.now(timezone.utc).strftime('%Y%m%d')}.csv"
     }
+@api_router.get("/orders/{order_id}/invoice")
+async def download_invoice(order_id: str, current_user: User = Depends(get_current_user)):
 
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    file_path = generate_invoice(order)
+
+    return FileResponse(
+        file_path,
+        media_type="application/pdf",
+        filename=f"invoice_{order_id}.pdf"
+    )
 # ==================== SEED DATA ====================
 
 @api_router.post("/seed-data")
