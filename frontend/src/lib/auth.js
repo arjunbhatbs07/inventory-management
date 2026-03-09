@@ -1,35 +1,50 @@
-import { storageService } from './localStorage';
+import axios from "axios";
+
+const API_BASE_URL = "https://inventory-management-exvi.onrender.com/api";
 
 export const authService = {
+
   login: async (username, password) => {
-    try {
-      const result = storageService.login(username, password);
-      localStorage.setItem('pickle_profit_auth', 'true');
-      localStorage.setItem('pickle_profit_current_user', JSON.stringify(result.user));
-      return result;
-    } catch (error) {
-      throw new Error('Invalid credentials');
-    }
+    const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+      username,
+      password
+    });
+
+    const data = response.data;
+
+    localStorage.setItem("token", data.access_token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    return data;
   },
 
   register: async (username, password, full_name) => {
-    const result = storageService.register(username, password, full_name);
-    localStorage.setItem('pickle_profit_auth', 'true');
-    localStorage.setItem('pickle_profit_current_user', JSON.stringify(result.user));
-    return result;
+    const response = await axios.post(`${API_BASE_URL}/auth/register`, {
+      username,
+      password,
+      full_name
+    });
+
+    const data = response.data;
+
+    localStorage.setItem("token", data.access_token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    return data;
   },
 
   logout: () => {
-    localStorage.removeItem('pickle_profit_auth');
-    localStorage.removeItem('pickle_profit_current_user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   },
 
   getUser: () => {
-    const user = localStorage.getItem('pickle_profit_current_user');
+    const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   },
 
   isAuthenticated: () => {
-    return !!localStorage.getItem('pickle_profit_auth');
+    return !!localStorage.getItem("token");
   }
+
 };
