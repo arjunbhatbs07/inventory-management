@@ -429,26 +429,37 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
     
     await db.orders.insert_one(order_dict)
     
-    # Update product stock and create stock history
-    for item in order_data.items:
-        # Reduce stock
-        await db.products.update_one(
-            {"id": item.product_id},
-            {"$inc": {"stock": -item.quantity}}
+   # Update product stock and create stock history
+for item in order_data.items:
+
+    product = await db.products.find_one({"id": item.product_id})
+
+    # Prevent negative stock
+    if product["stock"] < item.quantity:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Not enough stock for {product['name']}"
         )
-        
-        # Add stock history
-        history_dict = {
-            "id": str(uuid.uuid4()),
-            "product_id": item.product_id,
-            "product_name": item.product_name,
-            "action": "Sale",
-            "quantity": -item.quantity,
-            "date": datetime.now(timezone.utc).isoformat()
-        }
-        await db.stock_history.insert_one(history_dict)
-    
-    return Order(**order_dict)
+
+    # Reduce stock
+    await db.products.update_one(
+        {"id": item.product_id},
+        {"$inc": {"stock": -item.quantity}}
+    )
+
+    # Add stock history
+    history_dict = {
+        "id": str(uuid.uuid4()),
+        "product_id": item.product_id,
+        "product_name": item.product_name,
+        "action": "Sale",
+        "quantity": -item.quantity,
+        "date": datetime.now(timezone.utc).isoformat()
+    }
+
+    await db.stock_history.insert_one(history_dict)
+
+return Order(**order_dict)
 
 @api_router.get("/orders", response_model=List[Order])
 async def get_orders(
