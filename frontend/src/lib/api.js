@@ -10,56 +10,104 @@ const API = axios.create({
 });
 
 // Attach JWT token automatically
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+API.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Global error handler
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error.response?.data || error.message);
+    return Promise.reject(error);
   }
-
-  return config;
-});
+);
 
 export const api = {
-  getDashboard: () =>
-    API.get("/dashboard").then((res) => ({ data: res.data })),
 
-  getProducts: () =>
-    API.get("/products").then((res) => ({ data: res.data })),
+  // ================= DASHBOARD =================
+  getDashboard: async () => {
+    const res = await API.get("/dashboard");
+    return { data: res.data };
+  },
 
-  createProduct: (data) =>
-    API.post("/products", data).then((res) => ({ data: res.data })),
+  // ================= PRODUCTS =================
+  getProducts: async () => {
+    const res = await API.get("/products");
+    return { data: res.data };
+  },
 
-  updateProduct: (id, data) =>
-    API.put(`/products/${id}`, data).then((res) => ({ data: res.data })),
+  createProduct: async (data) => {
+    const res = await API.post("/products", data);
+    return { data: res.data };
+  },
 
-  deleteProduct: (id) =>
-    API.delete(`/products/${id}`).then((res) => ({ data: res.data })),
+  updateProduct: async (id, data) => {
+    const res = await API.put(`/products/${id}`, data);
+    return { data: res.data };
+  },
 
-  getCustomers: (search = "") =>
-    API.get(`/customers?search=${search}`).then((res) => ({ data: res.data })),
+  deleteProduct: async (id) => {
+    const res = await API.delete(`/products/${id}`);
+    return { data: res.data };
+  },
 
-  createCustomer: (data) =>
-    API.post("/customers", data).then((res) => ({ data: res.data })),
+  // ================= CUSTOMERS =================
+  getCustomers: async (search = "") => {
+    const res = await API.get(`/customers?search=${search}`);
+    return { data: res.data };
+  },
 
-  getCustomerOrders: (customerId) =>
-    API.get(`/orders/customer/${customerId}`).then((res) => ({ data: res.data })),
+  createCustomer: async (data) => {
+    const res = await API.post("/customers", data);
+    return { data: res.data };
+  },
 
-  createOrder: (data) =>
-    API.post("/orders", data).then((res) => ({ data: res.data })),
+  getCustomerOrders: async (customerId) => {
+    const res = await API.get(`/orders/customer/${customerId}`);
+    return { data: res.data };
+  },
 
-  getOrders: () =>
-    API.get("/orders").then((res) => ({ data: res.data })),
+  // ================= ORDERS =================
+  createOrder: async (data) => {
+    const res = await API.post("/orders", data);
+    return { data: res.data };
+  },
 
-  updateStock: (data) =>
-    API.post("/inventory/update-stock", data).then((res) => ({ data: res.data })),
+  getOrders: async () => {
+    const res = await API.get("/orders");
+    return { data: res.data };
+  },
 
-  getStockHistory: () =>
-    API.get("/inventory/history").then((res) => ({ data: res.data })),
+  // ================= INVENTORY =================
+  updateStock: async (data) => {
+    const res = await API.post("/inventory/update-stock", data);
+    return { data: res.data };
+  },
 
-  getInventoryValue: () =>
-    API.get("/inventory/value").then((res) => ({ data: res.data })),
+  getStockHistory: async () => {
+    const res = await API.get("/inventory/history");
+    return { data: res.data };
+  },
 
-  getSalesReport: (period) =>
-    API.get(`/reports/sales?period=${period}`).then((res) => ({ data: res.data })),
+  getInventoryValue: async () => {
+    const res = await API.get("/inventory/value");
+    return { data: res.data };
+  },
+
+  // ================= REPORTS =================
+  getSalesReport: async (period) => {
+    const res = await API.get(`/reports/sales?period=${period}`);
+    return { data: res.data };
+  },
+
 };
