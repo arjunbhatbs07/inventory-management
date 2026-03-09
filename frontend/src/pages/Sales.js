@@ -46,9 +46,7 @@ const Sales = () => {
           });
           toast.success('Customer found!');
         }
-      } catch (error) {
-        // Customer not found, that's okay
-      }
+      } catch (error) {}
     }
   };
 
@@ -96,6 +94,28 @@ const Sales = () => {
     return { totalCostPrice, totalRevenue, netProfit };
   };
 
+  /* ===========================
+     NEW FUNCTION FOR INVOICE
+     =========================== */
+
+  const downloadInvoice = async (orderId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/orders/${orderId}/invoice`
+      );
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice_${orderId}.pdf`;
+      a.click();
+    } catch (error) {
+      toast.error("Failed to download invoice");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -125,13 +145,20 @@ const Sales = () => {
         }))
       };
 
-      await api.createOrder(orderData);
+      const response = await api.createOrder(orderData);
+
       toast.success('Order created successfully!');
-      
-      // Reset form
+
+      /* ===== DOWNLOAD INVOICE ===== */
+      if (response?.data?.id) {
+        downloadInvoice(response.data.id);
+      }
+
       setOrderItems([]);
       setCustomerData({ name: '', phone: '', address: '' });
-      loadProducts(); // Refresh products to update stock
+
+      loadProducts();
+
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to create order');
     } finally {
@@ -147,7 +174,6 @@ const Sales = () => {
         <h1 className="text-4xl font-bold text-stone-800 mb-2" data-testid="sales-title">Create Sale Order</h1>
         <p className="text-stone-600">Enter order details and customer information</p>
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Customer Details */}
         <Card className="stat-card">
