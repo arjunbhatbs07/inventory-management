@@ -100,17 +100,17 @@ const Sales = () => {
 
 const downloadInvoice = async (orderId) => {
   try {
-    const response = await fetch(
-      `https://inventory-management-exvi.onrender.com/api/orders/${orderId}/invoice`
-    );
+    const response = await api.downloadInvoice(orderId);
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(new Blob([response]));
+    const link = document.createElement("a");
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `invoice_${orderId}.pdf`;
-    a.click();
+    link.href = url;
+    link.setAttribute("download", `invoice_${orderId}.pdf`);
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   } catch (error) {
     toast.error("Failed to download invoice");
   }
