@@ -828,40 +828,40 @@ async def seed_initial_data():
     if existing_products > 0:
         return {"message": "Data already exists"}
 
-  initial_products = [
-{"name": "Potato Chips Plain", "category": "Chips", "selling_price": 460, "buying_price": 320, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Potato Chips Chilli", "category": "Chips", "selling_price": 460, "buying_price": 320, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Potato Chips Pudina", "category": "Chips", "selling_price": 460, "buying_price": 320, "stock": 0, "min_stock": 0, "unit": "kg"},
+    initial_products = [
+        {"name": "Potato Chips Plain", "category": "Chips", "selling_price": 460, "buying_price": 320, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Potato Chips Chilli", "category": "Chips", "selling_price": 460, "buying_price": 320, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Potato Chips Pudina", "category": "Chips", "selling_price": 460, "buying_price": 320, "stock": 0, "min_stock": 0, "unit": "kg"},
 
-{"name": "Banana Chips Plain", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Banana Chips Chilli", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Banana Chips Pepper", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Banana Chips Tomato", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Banana Chips Coconut Oil", "category": "Chips", "selling_price": 480, "buying_price": 340, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Banana Chips Plain", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Banana Chips Chilli", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Banana Chips Pepper", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Banana Chips Tomato", "category": "Chips", "selling_price": 420, "buying_price": 295, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Banana Chips Coconut Oil", "category": "Chips", "selling_price": 480, "buying_price": 340, "stock": 0, "min_stock": 0, "unit": "kg"},
 
-{"name": "Jackfruit Chips Coconut Oil", "category": "Chips", "selling_price": 650, "buying_price": 460, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Jackfruit Chips Sunflower Oil", "category": "Chips", "selling_price": 580, "buying_price": 410, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Jackfruit Chips Coconut Oil", "category": "Chips", "selling_price": 650, "buying_price": 460, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Jackfruit Chips Sunflower Oil", "category": "Chips", "selling_price": 580, "buying_price": 410, "stock": 0, "min_stock": 0, "unit": "kg"},
 
-{"name": "Garlic Mini Papad", "category": "Papad", "selling_price": 500, "buying_price": 350, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Onion Mini Papad", "category": "Papad", "selling_price": 500, "buying_price": 350, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Garlic Mini Papad", "category": "Papad", "selling_price": 500, "buying_price": 350, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Onion Mini Papad", "category": "Papad", "selling_price": 500, "buying_price": 350, "stock": 0, "min_stock": 0, "unit": "kg"},
 
-{"name": "Traditional Uddina Papad", "category": "Papad", "selling_price": 130, "buying_price": 90, "stock": 0, "min_stock": 0, "unit": "pieces"},
-{"name": "Traditional Uddina Chilli Papad", "category": "Papad", "selling_price": 130, "buying_price": 90, "stock": 0, "min_stock": 0, "unit": "pieces"},
-{"name": "Potato Papad", "category": "Papad", "selling_price": 90, "buying_price": 65, "stock": 0, "min_stock": 0, "unit": "pieces"},
+        {"name": "Traditional Uddina Papad", "category": "Papad", "selling_price": 130, "buying_price": 90, "stock": 0, "min_stock": 0, "unit": "pieces"},
+        {"name": "Traditional Uddina Chilli Papad", "category": "Papad", "selling_price": 130, "buying_price": 90, "stock": 0, "min_stock": 0, "unit": "pieces"},
+        {"name": "Potato Papad", "category": "Papad", "selling_price": 90, "buying_price": 65, "stock": 0, "min_stock": 0, "unit": "pieces"},
 
-{"name": "Masala Peanuts", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Garlic Mixture", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Plain Sev", "category": "Snacks", "selling_price": 380, "buying_price": 270, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Kod Bale", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Masala Peanuts", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Garlic Mixture", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Plain Sev", "category": "Snacks", "selling_price": 380, "buying_price": 270, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Kod Bale", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
 
-{"name": "Rasam Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Chutney Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
-{"name": "Sambar Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Rasam Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Chutney Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Sambar Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
 
-{"name": "Papad Combo", "category": "Combo", "selling_price": 350, "buying_price": 250, "stock": 0, "min_stock": 0, "unit": "combo"},
+        {"name": "Papad Combo", "category": "Combo", "selling_price": 350, "buying_price": 250, "stock": 0, "min_stock": 0, "unit": "combo"},
 
-{"name": "Kokum Squash", "category": "Beverages", "selling_price": 130, "buying_price": 95, "stock": 0, "min_stock": 0, "unit": "litre"}
-]
+        {"name": "Kokum Squash", "category": "Beverages", "selling_price": 130, "buying_price": 95, "stock": 0, "min_stock": 0, "unit": "litre"}
+    ]
 
     for product in initial_products:
 
