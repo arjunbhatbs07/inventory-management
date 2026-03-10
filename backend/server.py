@@ -456,7 +456,6 @@ async def get_customer_by_phone(phone: str, current_user: User = Depends(get_cur
     return Customer(**customer)
 
 # ==================== ORDER / SALES ROUTES ====================
-
 @api_router.post("/orders", response_model=Order)
 async def create_order(order_data: OrderCreate, current_user: User = Depends(get_current_user)):
 
@@ -473,7 +472,10 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
 
     net_profit = total_revenue - total_cost_price - total_extra_expenses
 
-    # Create or update customer
+    # ======================
+    # CREATE / GET CUSTOMER
+    # ======================
+
     customer_id = order_data.customer_id
 
     if not customer_id:
@@ -499,7 +501,58 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
 
             await db.customers.insert_one(customer_dict)
 
-    # Create order object
+    # ======================
+    # CHECK PRODUCT STOCK
+    # ======================
+
+    for item in order_data.items:
+
+        product = await db.products.find_one({"id": item.product_id}, {"_id": 0})
+
+        if not product:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Product not found: {item.product_name}"
+            )
+
+        if product["stock"] < item.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Not enough stock for {product['name']}"
+            )
+
+    # ======================
+    # REDUCE STOCK
+    # ======================
+
+    for item in order_data.items:
+
+        result = await db.products.update_one(
+            {"id": item.product_id, "stock": {"$gte": item.quantity}},
+            {"$inc": {"stock": -item.quantity}}
+        )
+
+        if result.modified_count == 0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Stock update failed for {item.product_name}"
+            )
+
+        history_dict = {
+            "id": str(uuid.uuid4()),
+            "product_id": item.product_id,
+            "product_name": item.product_name,
+            "action": "Sale",
+            "quantity": -item.quantity,
+            "date": datetime.now(timezone.utc).isoformat()
+        }
+
+        await db.stock_history.insert_one(history_dict)
+
+    # ======================
+    # CREATE ORDER
+    # ======================
+
     order_dict = {
         "id": str(uuid.uuid4()),
         "customer_id": customer_id,
@@ -520,6 +573,11 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
 
     await db.orders.insert_one(order_dict)
 
+    return Order(**order_dict)
+
+
+# ==================== INVOICE ROUTE ====================
+
 @api_router.get("/orders/{order_id}/invoice")
 async def get_invoice(order_id: str, current_user: User = Depends(get_current_user)):
 
@@ -535,47 +593,9 @@ async def get_invoice(order_id: str, current_user: User = Depends(get_current_us
         media_type="application/pdf",
         filename=f"invoice_{order_id}.pdf"
     )
-    # =========================
-    # UPDATE PRODUCT STOCK
-    # =========================
 
-    for item in order_data.items:
 
-        product = await db.products.find_one({"id": item.product_id})
-
-        if not product:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Product not found: {item.product_name}"
-            )
-
-        # Prevent negative stock
-        if product["stock"] < item.quantity:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Not enough stock for {product['name']}"
-            )
-
-        # Reduce stock
-        await db.products.update_one(
-            {"id": item.product_id},
-            {"$inc": {"stock": -item.quantity}}
-        )
-
-        # Stock history
-        history_dict = {
-            "id": str(uuid.uuid4()),
-            "product_id": item.product_id,
-            "product_name": item.product_name,
-            "action": "Sale",
-            "quantity": -item.quantity,
-            "date": datetime.now(timezone.utc).isoformat()
-        }
-
-        await db.stock_history.insert_one(history_dict)
-
-    return Order(**order_dict)
-
+# ==================== GET ORDERS ====================
 
 @api_router.get("/orders", response_model=List[Order])
 async def get_orders(
@@ -597,6 +617,8 @@ async def get_orders(
     return orders
 
 
+# ==================== CUSTOMER ORDERS ====================
+
 @api_router.get("/orders/customer/{customer_id}", response_model=List[Order])
 async def get_customer_orders(
     customer_id: str,
@@ -609,7 +631,6 @@ async def get_customer_orders(
     ).sort("date", -1).to_list(1000)
 
     return orders
-
 # ==================== INVENTORY ROUTES ====================
 
 @api_router.post("/inventory/update-stock")
