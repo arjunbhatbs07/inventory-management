@@ -9,7 +9,8 @@ const API = axios.create({
   },
 });
 
-// Attach JWT token automatically
+
+// ================= REQUEST INTERCEPTOR =================
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -23,7 +24,8 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Global error handler
+
+// ================= RESPONSE INTERCEPTOR =================
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -32,6 +34,7 @@ API.interceptors.response.use(
   }
 );
 
+
 export const api = {
 
   // ================= DASHBOARD =================
@@ -39,6 +42,7 @@ export const api = {
     const res = await API.get("/dashboard");
     return { data: res.data };
   },
+
 
   // ================= PRODUCTS =================
   getProducts: async () => {
@@ -61,6 +65,7 @@ export const api = {
     return { data: res.data };
   },
 
+
   // ================= CUSTOMERS =================
   getCustomers: async (search = "") => {
     const res = await API.get(`/customers?search=${search}`);
@@ -77,6 +82,7 @@ export const api = {
     return { data: res.data };
   },
 
+
   // ================= ORDERS =================
   createOrder: async (data) => {
     const res = await API.post("/orders", data);
@@ -88,13 +94,13 @@ export const api = {
     return { data: res.data };
   },
 
+
   // ================= INVOICE =================
-downloadInvoice: async (orderId) => {
-  const res = await API.get(`/orders/${orderId}/invoice`, {
-    responseType: "blob"
-  });
-  return res.data;
-},
+  getInvoice: async (orderId) => {
+    const res = await API.get(`/orders/${orderId}/invoice`);
+    return { data: res.data };
+  },
+
 
   // ================= INVENTORY =================
   updateStock: async (data) => {
@@ -112,10 +118,21 @@ downloadInvoice: async (orderId) => {
     return { data: res.data };
   },
 
+
   // ================= REPORTS =================
   getSalesReport: async (period) => {
     const res = await API.get(`/reports/sales?period=${period}`);
     return { data: res.data };
   },
+
+  getBestSellingProducts: async () => {
+    const res = await API.get("/reports/best-selling");
+    return { data: res.data };
+  },
+
+  exportCSV: async () => {
+    const res = await API.get("/reports/export-csv");
+    return { data: res.data };
+  }
 
 };
