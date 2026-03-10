@@ -59,7 +59,7 @@ const Layout = ({ children }) => {
         `}
       >
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-primary mb-8">Pickle Profit</h1>
+          <h1 className="text-2xl font-bold text-primary mb-8">SAAC INVENTORY</h1>
           <nav className="space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
