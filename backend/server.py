@@ -520,6 +520,22 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
 
     await db.orders.insert_one(order_dict)
 
+@api_router.get("/orders/{order_id}/invoice")
+async def get_invoice(order_id: str, current_user: User = Depends(get_current_user)):
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return {
+        "order_id": order["id"],
+        "customer_name": order["customer_name"],
+        "customer_phone": order["customer_phone"],
+        "items": order["items"],
+        "total_revenue": order["total_revenue"],
+        "net_profit": order["net_profit"],
+        "date": order["date"]
+    }
     # =========================
     # UPDATE PRODUCT STOCK
     # =========================
