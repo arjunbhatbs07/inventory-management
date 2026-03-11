@@ -652,7 +652,35 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
     return Order(**order_dict)
 
 
+@api_router.post("/orders/{order_id}/cancel")
+async def cancel_order(order_id: str, current_user: User = Depends(get_current_user)):
 
+    order = await db.orders.find_one({"id": order_id})
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    # Restore stock
+    for item in order["items"]:
+
+        await db.products.update_one(
+            {"id": item["product_id"]},
+            {"$inc": {"stock": item["quantity"]}}
+        )
+
+        await db.stock_history.insert_one({
+            "id": str(uuid.uuid4()),
+            "product_id": item["product_id"],
+            "product_name": item["product_name"],
+            "action": "Order Cancelled",
+            "quantity": item["quantity"],
+            "date": datetime.now(timezone.utc).isoformat()
+        })
+
+    # Delete the order
+    await db.orders.delete_one({"id": order_id})
+
+    return {"message": "Order cancelled and stock restored"}
 
 # ==================== INVOICE ROUTE ====================
 
