@@ -94,6 +94,10 @@ export const api = {
     return { data: res.data };
   },
 
+  getOrderHistory: async (orderId) => {
+  const res = await API.get(`/orders/${orderId}/history`);
+  return { data: res.data };
+ },
 
 // ================= INVOICE =================
 downloadInvoice: async (orderId) => {
