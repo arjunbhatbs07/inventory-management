@@ -99,6 +99,11 @@ export const api = {
   return { data: res.data };
  },
 
+ cancelOrder: async (orderId) => {
+  const res = await API.post(`/orders/${orderId}/cancel`);
+  return { data: res.data };
+},
+
 // ================= INVOICE =================
 downloadInvoice: async (orderId) => {
   const res = await API.get(`/orders/${orderId}/invoice`, {
