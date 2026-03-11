@@ -17,11 +17,25 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from fastapi.responses import FileResponse
 import uuid
-
+from reportlab.lib.colors import HexColor
+import secrets
 INVOICE_DIR = "invoices"
 
 if not os.path.exists(INVOICE_DIR):
     os.makedirs(INVOICE_DIR)
+
+THEMES = [
+ {"bg":"#f5f0e6","header":"#2c3e50","accent":"#c4d7c8"},
+ {"bg":"#eef4ff","header":"#355c7d","accent":"#cde3ff"},
+ {"bg":"#f1fff4","header":"#2d6a4f","accent":"#c8f7d2"},
+ {"bg":"#fff4fb","header":"#6a4c93","accent":"#f1d4ff"},
+ {"bg":"#fff9f0","header":"#8d5524","accent":"#ffe3c8"},
+ {"bg":"#fff5f0","header":"#b56576","accent":"#ffd6d6"},
+ {"bg":"#f0fff9","header":"#1b4332","accent":"#b7efc5"},
+ {"bg":"#f3f0ff","header":"#5f0f40","accent":"#d0bdf4"},
+ {"bg":"#fffce0","header":"#b08968","accent":"#ffe5b4"},
+ {"bg":"#f0faff","header":"#0077b6","accent":"#caf0f8"},
+]
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -178,6 +192,14 @@ class DashboardStats(BaseModel):
     recent_orders: List[Order]
     sales_chart_data: List[Dict[str, Any]]
 
+class OrderHistory(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    order_id: str
+    action: str
+    description: str
+    date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # ==================== AUTH HELPERS ====================
 
 def get_password_hash(password: str):
@@ -224,22 +246,36 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 
 # ==================== INVOICE GENERATION ====================
-
 def generate_invoice(order):
 
     filename = f"invoice_{order['id']}.pdf"
     filepath = os.path.join(INVOICE_DIR, filename)
 
+    theme = THEMES[secrets.randbelow(len(THEMES))]
+
     c = canvas.Canvas(filepath, pagesize=A4)
+    width, height = A4
 
-    y = 800
+    # ===== Background =====
+    c.setFillColor(HexColor(theme["bg"]))
+    c.rect(0, 0, width, height, fill=1)
 
-    c.setFont("Helvetica-Bold", 20)
-    c.drawString(200, y, "SAAC INVENTORY - INVOICE")
+    # ===== Header Bar =====
+    c.setFillColor(HexColor(theme["header"]))
+    c.rect(0, height - 100, width, 100, fill=1)
 
-    y -= 40
+    c.setFillColor("#ffffff")
+    c.setFont("Helvetica-Bold", 22)
+    c.drawString(50, height - 60, "SAAC INVENTORY")
 
     c.setFont("Helvetica", 12)
+    c.drawString(50, height - 80, "Order Invoice")
+
+    y = height - 140
+
+    # ===== Order Details =====
+    c.setFillColor("#000000")
+    c.setFont("Helvetica", 11)
 
     c.drawString(50, y, f"Order ID: {order['id']}")
     y -= 20
@@ -251,29 +287,59 @@ def generate_invoice(order):
 
     y -= 30
 
-    c.drawString(50, y, "Products")
+    # ===== Table Header =====
+    c.setFillColor(HexColor(theme["accent"]))
+    c.rect(50, y-5, 500, 20, fill=1)
+
+    c.setFillColor("#000000")
+    c.setFont("Helvetica-Bold", 12)
+
+    c.drawString(55, y, "Product")
+    c.drawString(300, y, "Qty")
+    c.drawString(360, y, "Unit")
+    c.drawString(420, y, "Price")
+
+    y -= 20
+    c.line(50, y, 550, y)
 
     y -= 20
 
+    c.setFont("Helvetica", 11)
+
+    total = 0
+
+    # ===== Items =====
     for item in order["items"]:
 
-        line = f"{item['product_name']}  -  {item['quantity']} {item['unit']}  - ₹{item['selling_price']}"
+        item_total = item["selling_price"] * item["quantity"]
+        total += item_total
 
-        c.drawString(70, y, line)
+        c.drawString(50, y, item["product_name"])
+        c.drawString(300, y, str(item["quantity"]))
+        c.drawString(360, y, item["unit"])
+        c.drawString(420, y, f"₹ {item_total}")
 
         y -= 20
 
     y -= 20
 
-    c.drawString(50, y, f"Total Revenue: ₹{order['total_revenue']}")
-    y -= 20
+    # ===== Total Box =====
+    c.setFillColor(HexColor(theme["accent"]))
+    c.roundRect(350, y-10, 200, 30, 6, fill=1)
 
-    c.drawString(50, y, f"Profit: ₹{order['net_profit']}")
+    c.setFillColor("#000000")
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(360, y, f"Total: ₹ {order['total_revenue']}")
+
+    y -= 30
+
+    # ===== Internal Profit (for your inventory only) =====
+    c.setFont("Helvetica", 10)
+    c.drawString(50, y, f"Net Profit (Internal): ₹ {order['net_profit']}")
 
     c.save()
 
     return filepath
-
 
 # ==================== AUTH ROUTES ====================
 
@@ -572,8 +638,20 @@ async def create_order(order_data: OrderCreate, current_user: User = Depends(get
     }
 
     await db.orders.insert_one(order_dict)
+    # SAVE ORDER HISTORY
+    history = {
+        "id": str(uuid.uuid4()),
+        "order_id": order_dict["id"],
+        "action": "created",
+        "description": f"Order created for {order_dict['customer_name']}",
+        "date": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.order_history.insert_one(history)
 
     return Order(**order_dict)
+
+
 
 
 # ==================== INVOICE ROUTE ====================
@@ -615,7 +693,55 @@ async def get_orders(
     orders = await db.orders.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
 
     return orders
+    
+    @api_router.post("/orders/{order_id}/cancel")
+    async def cancel_order(order_id: str, current_user: User = Depends(get_current_user)):
+    
+        order = await db.orders.find_one({"id": order_id})
+    
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+    
+        # RESTORE STOCK
+        for item in order["items"]:
+    
+            await db.products.update_one(
+                {"id": item["product_id"]},
+                {"$inc": {"stock": item["quantity"]}}
+            )
+    
+            await db.stock_history.insert_one({
+                "id": str(uuid.uuid4()),
+                "product_id": item["product_id"],
+                "product_name": item["product_name"],
+                "action": "Order Cancelled",
+                "quantity": item["quantity"],
+                "date": datetime.now(timezone.utc).isoformat()
+            })
+    
+        # DELETE ORDER
+        await db.orders.delete_one({"id": order_id})
+    
+        # SAVE HISTORY
+        await db.order_history.insert_one({
+            "id": str(uuid.uuid4()),
+            "order_id": order_id,
+            "action": "cancelled",
+            "description": "Order cancelled and stock restored",
+            "date": datetime.now(timezone.utc).isoformat()
+        })
+    
+        return {"message": "Order cancelled and stock restored"}
 
+@api_router.get("/orders/{order_id}/history")
+async def get_order_history(order_id: str, current_user: User = Depends(get_current_user)):
+
+    history = await db.order_history.find(
+        {"order_id": order_id},
+        {"_id": 0}
+    ).sort("date", -1).to_list(100)
+
+    return history
 
 # ==================== CUSTOMER ORDERS ====================
 
