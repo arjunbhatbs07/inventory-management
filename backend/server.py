@@ -1042,7 +1042,8 @@ async def seed_initial_data():
         {"name": "Masala Peanuts", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
         {"name": "Garlic Mixture", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
         {"name": "Plain Sev", "category": "Snacks", "selling_price": 380, "buying_price": 270, "stock": 0, "min_stock": 0, "unit": "kg"},
-        {"name": "Kod Bale", "category": "Snacks", "selling_price": 400, "buying_price": 280, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Kod Bale", "category": "Snacks", "selling_price": 400, "buying_price": 210, "stock": 0, "min_stock": 0, "unit": "kg"},
+        {"name": "Tukudi", "category": "Snacks", "selling_price": 400, "buying_price": 210, "stock": 0, "min_stock": 0, "unit": "kg"},
 
         {"name": "Rasam Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
         {"name": "Chutney Powder", "category": "Powders", "selling_price": 600, "buying_price": 420, "stock": 0, "min_stock": 0, "unit": "kg"},
