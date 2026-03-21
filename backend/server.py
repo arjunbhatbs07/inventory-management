@@ -1053,22 +1053,23 @@ async def seed_initial_data():
 
         {"name": "Kokum Squash", "category": "Beverages", "selling_price": 130, "buying_price": 95, "stock": 0, "min_stock": 0, "unit": "litre"}
     ]
+    for product in initial_products:
+    
+        exists = await db.products.find_one({"name": product["name"]})
+    
+        if exists:
+            continue  # skip existing product
+    
+        product["id"] = str(uuid.uuid4())
+        product["date_added"] = datetime.now(timezone.utc).isoformat()
+        product["image_url"] = None
+        product["description"] = f"Delicious homemade {product['name']}"
+    
+        await db.products.insert_one(product)
+    
+    return {"message": "Products synced successfully"}
 
-  for product in initial_products:
-
-    exists = await db.products.find_one({"name": product["name"]})
-
-    if exists:
-        continue  # skip existing product
-
-    product["id"] = str(uuid.uuid4())
-    product["date_added"] = datetime.now(timezone.utc).isoformat()
-    product["image_url"] = None
-    product["description"] = f"Delicious homemade {product['name']}"
-
-    await db.products.insert_one(product)
-
-return {"message": "Products synced successfully"}
+      
 
 
 # ==================== APP STARTUP ====================
