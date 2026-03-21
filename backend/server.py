@@ -1010,7 +1010,7 @@ async def fix_negative_stock():
 
 # ==================== SEED DATA ====================
 
-@api_router.post("/seed-data")
+@api_router.get("/seed-data")
 async def seed_initial_data():
 
     existing_products = await db.products.count_documents({})
